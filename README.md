@@ -84,7 +84,7 @@ Payload: ```<xanxsSjAvasCRipT:/*--></SCripT></xanXsS</Style><svG/Onload='ALERt((
 
 # Options
 
-XanXSS comes complete with the ability to use a proxy, is compatible with proxychains, and allows you to add custom headers. I have provideda full list of options for your convience:
+XanXSS comes complete with the ability to use a proxy, is compatible with proxychains, and allows you to add custom headers. I have provided a full list of options for your convience:
 
 ```bash
 usage: xanxss.py [-h] [-u http://test.com/test.php?id=] [-a VERIFY]
@@ -112,3 +112,7 @@ optional arguments:
   -H HEADER=VALUE,HEADER:VALUE, --headers HEADER=VALUE,HEADER:VALUE
                         Add your own custom headers to the request
 ```
+
+# Bugs
+
+IF you happen to find a bug or an issue please [create am issue](https://github.com/Ekultek/XanXSS/issues/new)
