@@ -78,4 +78,9 @@ class OptParser(argparse.ArgumentParser):
             "--throttle", type=int, dest="throttleTime", metavar="TIME (secs)", default=0,
             help="throttle each request with a sleep time (*default=0)"
         )
+        parser.add_argument(
+            "-P", "--polyglot", action="store_true", dest="genPolyglot",
+            help="generate a polyglot script to append to the end of the running scripts, if there is XSS this should "
+                 "find it (*default=False)"
+        )
         return parser.parse_args()

@@ -1,6 +1,7 @@
 from lib.cmd import OptParser
 from lib.requester import Requester
 from lib.payload_generation import PayloadGeneration
+from lib.polyglot_generator import generate_polyglot
 from lib.settings import (
     PAYLOADS,
     prettify,
@@ -88,8 +89,17 @@ def main():
         tampers = generator.create_tampers()
         info("payloads tampered successfully")
         payloads = generator.obfuscate_tampers(tampers)
+        if opts.genPolyglot:
+            info("generating polyglot script")
+            polyglot = generate_polyglot()
+            info("script generated: {}".format(polyglot))
         info("running payloads")
+        times_ran = 0
         for payload in payloads:
+            if opts.genPolyglot and times_ran != 1:
+                warning("running polyglot first")
+                times_ran += 1
+                payload = polyglot
             if opts.runVerbose:
                 debug("running payload '{}'".format(payload))
             requester = Requester(
@@ -114,6 +124,6 @@ def main():
         import traceback
 
         error("something bad happened, failed with error: {}, traceback:".format(str(e)))
-        print("Traceback (most recent call):\n{}".format("".join(traceback.format_tb(sys.exc_info()[2])).strip()))
+        print("Traceback (most recent call):\n    {}".format("".join(traceback.format_tb(sys.exc_info()[2])).strip()))
     except KeyboardInterrupt:
         error("user quit")

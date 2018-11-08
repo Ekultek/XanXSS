@@ -5,6 +5,10 @@ import lib.settings
 
 class PayloadGeneration(object):
 
+    """
+    load the payloads into a set
+    """
+
     def __init__(self, templates, amount=10):
         self.templates = templates
         self.amount = amount
