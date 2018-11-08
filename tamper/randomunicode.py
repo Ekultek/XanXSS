@@ -14,5 +14,4 @@ def tamper(script):
             if c in acceptable_characters:
                 c = "%%u%.4X" % random.randrange(0x10000)
         retval.append(c)
-    print retval
     return ''.join(retval)
