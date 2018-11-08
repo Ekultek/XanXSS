@@ -1,10 +1,11 @@
 import os
+import re
 import sys
 import platform
 import importlib
 
 
-VERSION = "0.1"
+VERSION = "0.2"
 BANNER = """\033[34m
     ____  ___             ____  ___  _________ _________
     \   \/  /____    ____ \   \/  / /   _____//   _____/
@@ -65,3 +66,30 @@ def prettify(working):
     for item in working:
         print("  ~~> {}".format(item))
     print(seperator)
+
+
+def heuristics(url):
+    query_regex = re.compile(r"(.*)[?|#](.*){1}\=(.*)")
+    url_validation = re.compile(
+        r'^(?:http|ftp)s?://'  # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  # domain...
+        r'localhost|'  # localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
+        r'(?::\d+)?'  # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE
+    )
+    retval = {}
+    if url_validation.match(url):
+        retval["validated"] = True
+    else:
+        retval["validated"] = False
+    if query_regex.search(url) is not None:
+        retval["query"] = "ok"
+    else:
+        retval["query"] = "nogo"
+    for c in url:
+        if c == "*":
+            retval["marker"] = "yes"
+    if url.count("*") > 1:
+        retval["multi_marker"] = True
+    return retval
