@@ -9,7 +9,12 @@ XanXSS is a reflected XSS searching tool (DOM coming soon) that creates payloads
 <iMG&#13;sRc=%0acONfIRM();=+'jAVASCRiPT:alerT("XSS");'</STYlE><Svg/onLoad='alErT((1));'/>
 ```
 
-With XanXSS every payload is different. XanXSS works by running through the payloads until a specified number is found or a timer hits the max time, this prevents it from looping for to long.
+With XanXSS every payload is different. XanXSS works by running through the payloads until a specified number is found or a timer hits the max time, this prevents it from looping for to long. Some of the features included in XanXSS:
+
+ - Ability to pass your own headers using `-H`
+ - Ability to generate a polyglot script using `-P`
+ - Ability to run behind a proxy using `-p`
+ - And many more
 
 # Proof of Concept
 
@@ -88,31 +93,47 @@ XanXSS comes complete with the ability to use a proxy, is compatible with proxyc
 
 ```bash
 usage: xanxss.py [-h] [-u http://test.com/test.php?id=] [-a VERIFY]
-                 [-f AMOUNT] [-t TIME]
-                 [-p SCRIPT,SCRIPT,SCRIPT [SCRIPT,SCRIPT,SCRIPT ...]]
+                 [-f AMOUNT] [-t TIME] [-p SCRIPT, [SCRIPT, ...]]
                  [-F FILE-PATH] [-v] [--proxy TYPE://IP:PORT]
-                 [-H HEADER=VALUE,HEADER:VALUE]
+                 [-H HEADER=VALUE,HEADER:VALUE] [--throttle TIME secs] [-P]
 
 optional arguments:
   -h, --help            show this help message and exit
   -u http://test.com/test.php?id=, --url http://test.com/test.php?id=
-                        pass a URL to test for XSS vulnerabilities
+                        pass a URL to test for XSS vulnerabilities. it is
+                        recommended that you use a URL with a query parameter
   -a VERIFY, --amount VERIFY
-                        how many verifications steps to be taken
+                        how many verifications steps to be taken, this will
+                        determine how reliable the payload is. the more
+                        verification steps the more reliable the payload will
+                        be (*default=5)
   -f AMOUNT, --find AMOUNT
-                        find this amount of working payloads
-  -t TIME, --time TIME  amount of time in seconds to spend on testing
-  -p SCRIPT,SCRIPT,SCRIPT [SCRIPT,SCRIPT,SCRIPT ...], --payloads SCRIPT,SCRIPT,SCRIPT [SCRIPT,SCRIPT,SCRIPT ...]
-                        pass a comma separated list of your own payloads
+                        attempt to find this amount of working payloads,
+                        specifying this does not guarantee you will find this
+                        amount of working payloads (*default=25)
+  -t TIME, --time TIME  amount of time in seconds to spend on testing, this
+                        will be used as a timer for the verification
+                        (*default=35s)
+  -p SCRIPT, [SCRIPT, ...], --payloads SCRIPT, [SCRIPT, ...]
+                        pass a comma separated list of your own payloads, must
+                        contain at least 5 payloads
   -F FILE-PATH, --file FILE-PATH
-                        pass a file containing payloads
-  -v, --verbose         run in verbose mode
+                        pass a textual file containing payloads one per line,
+                        must contain at least 5 payloads
+  -v, --verbose         run in verbose mode and display more output
+                        (*default=False)
   --proxy TYPE://IP:PORT
                         pass a proxy in the format type://ip:port
   -H HEADER=VALUE,HEADER:VALUE, --headers HEADER=VALUE,HEADER:VALUE
-                        Add your own custom headers to the request
+                        add your own custom headers to the request
+                        (*default=connection,user-agent)
+  --throttle TIME (secs)
+                        throttle each request with a sleep time (*default=0)
+  -P, --polyglot        generate a polyglot script to append to the end of the
+                        running scripts, if there is XSS this should find it
+                        (*default=False)
 ```
 
 # Bugs
 
-IF you happen to find a bug or an issue please [create am issue](https://github.com/Ekultek/XanXSS/issues/new)
+If you happen to find a bug or an issue please [create an issue](https://github.com/Ekultek/XanXSS/issues/new)
