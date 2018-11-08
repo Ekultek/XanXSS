@@ -54,26 +54,28 @@ class Requester(object):
             for item in responses:
                 for key, value in item.items():
                     if value is not None:
-                        key_parts = textwrap.wrap(key, len(key) / 8)
-                        for part in key_parts:
-                            issue_fixers = {
-                                ")": r"\)", "(": "\(", "[": r"\[", "]": r"\]",
-                                "\\": r"\\", "/*/": r"\/*\/", "((": "\(\(", "+": "\+",
-                                "*": r"\*", "/": r"\/", "%0a": r"(\r\n|\r|\n)"
-                            }
-                            identifiers = issue_fixers.keys()
-                            to_use = ""
-                            for c in part:
-                                if c in identifiers:
-                                    c = issue_fixers[c]
-                                to_use += c
-                            try:
-                                regex = re.compile(to_use, re.I)
-                                if regex.search(value):
-                                    parts_in_script += 1
-                                if parts_in_script <= verification_amount:
-                                    retval.add(key)
-                            except re.error:
-                                print part
-                                pass
+                        try:
+                            key_parts = textwrap.wrap(key, len(key) / 8)
+                            for part in key_parts:
+                                issue_fixers = {
+                                    ")": r"\)", "(": "\(", "[": r"\[", "]": r"\]",
+                                    "\\": r"\\", "/*/": r"\/*\/", "((": "\(\(", "+": "\+",
+                                    "*": r"\*", "/": r"\/", "%0a": r"(\r\n|\r|\n)"
+                                }
+                                identifiers = issue_fixers.keys()
+                                to_use = ""
+                                for c in part:
+                                    if c in identifiers:
+                                        c = issue_fixers[c]
+                                    to_use += c
+                                try:
+                                    regex = re.compile(to_use, re.I)
+                                    if regex.search(value):
+                                        parts_in_script += 1
+                                    if parts_in_script <= verification_amount:
+                                        retval.add(key)
+                                except re.error:
+                                    pass
+                        except ValueError:
+                            pass
         return retval
