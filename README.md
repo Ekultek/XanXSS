@@ -13,7 +13,7 @@ With XanXSS every payload is different. XanXSS works by running through the payl
 
  - Ability to pass your own headers using `-H`
  - Ability to generate a polyglot script using `-P`
- - Ability to run behind a proxy using `-p`
+ - Ability to run behind a proxy using `--proxy`
  - And many more
 
 # Proof of Concept
