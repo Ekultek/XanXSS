@@ -5,7 +5,8 @@ from lib.settings import (
     PAYLOADS,
     prettify,
     BANNER,
-    HEADERS
+    HEADERS,
+    heuristics
 )
 from lib.formatter import (
     info,
@@ -17,12 +18,36 @@ from lib.formatter import (
 
 def main():
     print(BANNER)
+    placement_marker = False
+
     try:
         opts = OptParser.opts()
         retval = []
         if opts.urlToUse is None:
             error("must provide a URL to test")
             exit(1)
+        else:
+            url_validation = heuristics(opts.urlToUse)
+            if not url_validation["validated"]:
+                error(
+                    "the provided URL could not be validated as a URL, check the URL and try again. a valid URL "
+                    "looks something like this: 'http://somesite.com/some/path.php?someid=param'"
+                )
+                exit(1)
+            else:
+                if url_validation["query"] == "nogo":
+                    warning(
+                        "heuristic testing has detected that the provided URL lacks a GET parameter "
+                        "this may interfere with testing results"
+                    )
+            try:
+                if url_validation["marker"] == "yes":
+                    info("marker for attack placement found, prioritizing")
+                    placement_marker = True
+                if url_validation["multi_marker"]:
+                    warning("multiple markers are not supported, only the first one will be used")
+            except:
+                pass
         if opts.extraHeaders is not None:
             info("using extra headers")
             headers = opts.extraHeaders
@@ -53,6 +78,10 @@ def main():
         if len(payloads) < 5:
             error("must provide at least 5 payloads")
             exit(1)
+        if opts.testTime is not None:
+            test_time = opts.testTime
+        else:
+            test_time = 10
         info("generating payloads")
         generator = PayloadGeneration(payloads, amount_of_payloads)
         info("running payloads through tampering procedures")
@@ -65,11 +94,14 @@ def main():
                 debug("running payload '{}'".format(payload))
             requester = Requester(
                 opts.urlToUse, payload, headers=headers,
-                proxy=opts.proxyToUse
+                proxy=opts.proxyToUse, throttle=opts.throttleTime
             )
-            soup = requester.make_request()
+            soup = requester.make_request(marker=placement_marker)
             retval.append(soup)
-        working_payloads = Requester.check_for_script(retval, verification_amount=verification_amount)
+        info("running checks")
+        working_payloads = Requester.check_for_script(
+            retval, verification_amount=verification_amount, test_time=test_time
+        )
         if len(working_payloads) == 0:
             warning("no working payloads found for requested site")
             exit(1)
