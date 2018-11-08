@@ -18,14 +18,19 @@ class Requester(object):
         self.throttle = kwargs.get("throttle", 0)
         self.timeout = kwargs.get("timeout", 7)
 
-    def load_url(self):
-        return self.url + self.script
+    def load_url(self, marker=False):
+        if not marker:
+            return self.url + self.script
+        else:
+            marker_index = self.url.index("*")
+            self.url = self.url[:marker_index] + self.script + self.url[marker_index:]
+            return self.url.replace("*", "")
 
-    def make_request(self):
+    def make_request(self, marker=False):
         retval = {}
         try:
             time.sleep(self.throttle)
-            self.url = self.load_url()
+            self.url = self.load_url(marker=marker)
             req = requests.get(self.url, timeout=self.timeout, headers=self.headers, proxies=self.proxy)
             content = req.content
             retval[self.script] = content
@@ -34,7 +39,7 @@ class Requester(object):
         return retval
 
     @staticmethod
-    def check_for_script(responses, verification_amount=10, total_amount_to_find=5, test_time=10):
+    def check_for_script(responses, verification_amount=10, total_amount_to_find=10, test_time=35):
         retval = set()
         parts_in_script = 0
         start_time = time.time()
@@ -54,7 +59,7 @@ class Requester(object):
                             issue_fixers = {
                                 ")": r"\)", "(": "\(", "[": r"\[", "]": r"\]",
                                 "\\": r"\\", "/*/": r"\/*\/", "((": "\(\(", "+": "\+",
-                                "*": r"\*", "/": r"\/"
+                                "*": r"\*", "/": r"\/", "%0a": r"(\r\n|\r|\n)"
                             }
                             identifiers = issue_fixers.keys()
                             to_use = ""
@@ -69,5 +74,6 @@ class Requester(object):
                                 if parts_in_script <= verification_amount:
                                     retval.add(key)
                             except re.error:
+                                print part
                                 pass
         return retval
