@@ -101,19 +101,35 @@ def main():
                 times_ran += 1
                 payload = polyglot
             if opts.runVerbose:
-                debug("running payload '{}'".format(payload))
+                debug("running payload '{}{}{}'".format(opts.usePrefix, payload, opts.useSuffix))
             requester = Requester(
                 opts.urlToUse, payload, headers=headers,
                 proxy=opts.proxyToUse, throttle=opts.throttleTime
             )
-            soup = requester.make_request(marker=placement_marker)
+            soup = requester.make_request(
+                marker=placement_marker, prefix=opts.usePrefix, suffix=opts.useSuffix
+            )
             retval.append(soup)
         info("running checks")
         working_payloads = Requester.check_for_script(
             retval, verification_amount=verification_amount, test_time=test_time
         )
+        if opts.useSuffix != "" or opts.usePrefix != "":
+            working_payloads = [opts.usePrefix + p + opts.useSuffix for p in working_payloads]
         if len(working_payloads) == 0:
             warning("no working payloads found for requested site")
+            info("checking if scripts are being sanitized")
+            requester = Requester(
+                opts.urlToUse, None, headers=headers,
+                proxy=opts.proxyToUse, throttle=opts.throttleTime
+            )
+            results = requester.check_for_sanitize()
+            if results:
+                warning("it seems that the scripts are being sanitized properly")
+            elif results is None:
+                warning("hit an error in request, possible WAF?")
+            else:
+                info("it appears that the scripts are not being sanitized, try manually?")
             exit(1)
         else:
             info("working payloads:")
