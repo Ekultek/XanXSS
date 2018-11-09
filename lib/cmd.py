@@ -83,4 +83,13 @@ class OptParser(argparse.ArgumentParser):
             help="generate a polyglot script to append to the end of the running scripts, if there is XSS this should "
                  "find it (*default=False)"
         )
+        parser.add_argument(
+            "--prefix", dest="usePrefix", metavar="PREFIX", default="",
+            help="choose a prefix to use for the payloads, this will be used at the start of each payload "
+                 "(*default=None)"
+        )
+        parser.add_argument(
+            "--suffix", dest="useSuffix", metavar="SUFFIX", default="",
+            help="choose a suffix to append to the end of the payloads (*default=None)"
+        )
         return parser.parse_args()
