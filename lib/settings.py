@@ -5,7 +5,7 @@ import platform
 import importlib
 
 
-VERSION = "0.3"
+VERSION = "0.4"
 BANNER = """\033[95m
     ____  ___             ____  ___  _________ _________  \033[0m\033[96m
     \   \/  /____    ____ \   \/  / /   _____//   _____/
